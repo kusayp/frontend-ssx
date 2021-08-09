@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-// react-bootstrap components
+import jsonData from "../../assets/data/data.json";
+import ReactHighcharts from "react-highcharts/ReactHighstock.src";
 import {
   Button,
   Card,
@@ -14,13 +15,47 @@ import {
   InputGroup,
   Modal,
 } from "react-bootstrap";
-import ChartistGraph from "react-chartist";
+import configPrice from "./data";
+
+function GraphModal(props) {
+  return (
+    <Modal
+      {...props}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Body>
+      <Row>
+          <Col md="12">
+            <Card>
+              <Card.Header>
+                <Card.Title as="h4">Price history of stock</Card.Title>
+              </Card.Header>
+              <Card.Body>
+                <div className="ct-chart" id="chartHours">
+                  <ReactHighcharts config={configPrice}></ReactHighcharts>
+                </div>
+              </Card.Body>
+              <Card.Footer>
+                <hr></hr>
+              </Card.Footer>
+            </Card>
+          </Col>
+        </Row>
+        </Modal.Body>
+    </Modal>
+  );
+}
+
 
 const Dashboard = () => {
   const [show, setShow] = useState(false);
+  const [modalShow, setModalShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  
 
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
@@ -30,13 +65,68 @@ const Dashboard = () => {
 
   return (
     <>
+      <Modal size="lg" show={show} onHide={handleClose} aria-labelledby="contained-modal-title-vcenter"
+      centered>
+        <Modal.Header closeButton>
+          <Modal.Title>MTN Ghana stock (MTNGS)</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Container fluid>
+            <Row>
+              <Col md="12">
+                <Table className="table-hover">
+                  <tbody>
+                    <tr>
+                      <td>Previous Closing Price</td>
+                      <td>12.3</td>
+                    </tr>
+                    <tr>
+                      <td>Last Price</td>
+                      <td>5.2</td>
+                    </tr>
+                    <tr>
+                      <td>Last Quantity</td>
+                      <td>10000</td>
+                    </tr>
+                    <tr>
+                      <td>Change on Day</td>
+                      <td>5%</td>
+                    </tr>
+                    <tr>
+                      <td>Volume on Day</td>
+                      <td>500</td>
+                    </tr>
+                    <tr>
+                      <td>Best Bid</td>
+                      <td>14.8</td>
+                    </tr>
+                    <tr>
+                      <td>Best Ask</td>
+                      <td>18.2</td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </Col>
+            </Row>
+          </Container>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button size="sm" variant="secondary" onClick={handleClose}>
+            Sell
+          </Button>
+          <div className="float-end">
+            <Button size="sm" variant="primary" onClick={handleClose}>
+              Buy
+            </Button>
+          </div>
+          {/* <hr></hr> */}
+        </Modal.Footer>
+      </Modal>
       <Container fluid>
         <Row>
           <Col md="8">
             <Card>
               <Card.Header>
-                {/* <Card.Title as="h4">Users Behavior</Card.Title> */}
-                {/* <p className="card-category">24 Hours performance</p> */}
                 <Form>
                   <Row>
                     <Col xs={5}>
@@ -69,7 +159,6 @@ const Dashboard = () => {
                 <Table className="table-hover table-striped">
                   <thead>
                     <tr>
-                      <th className="border-0">SN</th>
                       <th className="border-0">Symbol</th>
                       <th className="border-0">Exchange</th>
                       <th className="border-0">Currency</th>
@@ -81,39 +170,40 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <OverlayTrigger
-                        placement="bottom"
-                        delay={{ show: 250, hide: 400 }}
-                        overlay={renderTooltip}
-                      >
-                        <td>TBL</td>
-                      </OverlayTrigger>
-
-                      <td>REG</td>
-                      <td>GHC</td>
-                      <td>56.6</td>
-                      <td>57</td>
-                      <td>85</td>
-                      <td>83</td>
-                      <td>
-                        <button
-                          type="button"
-                          onClick={handleShow}
-                          className="btn btn-warning btn-sm"
+                    {jsonData.data.map((res, index) => (
+                      <tr key={index}>
+                        <OverlayTrigger
+                          placement="bottom"
+                          delay={{ show: 250, hide: 400 }}
+                          overlay={renderTooltip}
                         >
-                          <i className="fas fa-eye"></i>
-                        </button>{" "}
-                        <button
-                          type="button"
-                          className="btn btn-warning btn-sm"
-                        >
-                          <i className="fas fa-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
+                          <td>{res.symbol}</td>
+                        </OverlayTrigger>
+                        <td>{res.exchange}</td>
+                        <td>GHC</td>
+                        <td>{res.open}</td>
+                        <td>{res.close}</td>
+                        <td>{res.low}</td>
+                        <td>{res.high}</td>
+                        <td>
+                          <button
+                            type="button"
+                            onClick={handleShow}
+                            className="btn btn-warning btn-sm"
+                          >
+                            <i className="fas fa-eye"></i>
+                          </button>{" "}
+                          <button
+                            type="button"
+                            onClick={() => setModalShow(true)}
+                            className="btn btn-warning btn-sm"
+                          >
+                            <i className="fas fa-chart-line"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    </tbody>
                 </Table>
               </Card.Body>
               <Card.Footer>
@@ -191,126 +281,11 @@ const Dashboard = () => {
             </Card>
           </Col>
         </Row>
-        <Row>
-          <Col md="12">
-            <Card>
-              <Card.Header>
-                <Card.Title as="h4">Price history of stock</Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <div className="ct-chart" id="chartHours">
-                  <ChartistGraph
-                    data={{
-                      labels: [
-                        "Mony",
-                        "Tue",
-                        "Wed",
-                        "Thur",
-                        "Fri",
-                        "Sat",
-                        "Sun",
-                      ],
-                      series: [
-                        [1.23, 1.4, 3.85, 1.1, 4.6, 3.74, 2.96],
-                        // [67, 152, 143, 240, 287, 335, 435, 437],
-                        // [23, 113, 67, 108, 190, 239, 307, 308],
-                      ],
-                    }}
-                    type="Line"
-                    options={{
-                      low: 0,
-                      high: 5,
-                      showArea: false,
-                      height: "245px",
-                      axisX: {
-                        showGrid: false,
-                      },
-                      lineSmooth: true,
-                      showLine: true,
-                      showPoint: true,
-                      fullWidth: true,
-                      chartPadding: {
-                        right: 70,
-                      },
-                    }}
-                    responsiveOptions={[
-                      [
-                        "screen and (max-width: 640px)",
-                        {
-                          axisX: {
-                            labelInterpolationFnc: function (value) {
-                              return value[0];
-                            },
-                          },
-                        },
-                      ],
-                    ]}
-                  />
-                </div>
-              </Card.Body>
-              <Card.Footer>
-                <hr></hr>
-              </Card.Footer>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>MTN Ghana stock (MTNGS)</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Container fluid>
-            <Row>
-              <Col md="12">
-                <Table className="table-hover">
-                  <tbody>
-                    <tr>
-                      <td>Previous Closing Price</td>
-                      <td>12.3</td>
-                    </tr>
-                    <tr>
-                      <td>Last Price</td>
-                      <td>5.2</td>
-                    </tr>
-                    <tr>
-                      <td>Last Quantity</td>
-                      <td>10000</td>
-                    </tr>
-                    <tr>
-                      <td>Change on Day</td>
-                      <td>5%</td>
-                    </tr>
-                    <tr>
-                      <td>Volume on Day</td>
-                      <td>500</td>
-                    </tr>
-                    <tr>
-                      <td>Best Bid</td>
-                      <td>14.8</td>
-                    </tr>
-                    <tr>
-                      <td>Best Ask</td>
-                      <td>18.2</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </Col>
-            </Row>
-          </Container>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button size="sm" variant="secondary" onClick={handleClose}>
-            Sell
-          </Button>
-          <div className="float-end">
-            <Button size="sm" variant="primary" onClick={handleClose}>
-              Buy
-            </Button>
-          </div>
-          {/* <hr></hr> */}
-        </Modal.Footer>
-      </Modal>
+        </Container>
+      <GraphModal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+      />
     </>
   );
 };

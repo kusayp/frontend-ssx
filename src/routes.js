@@ -1,4 +1,5 @@
 import Dashboard from "./views/pages/dashboard/Dashboard";
+import HeadlinePage from "./views/pages/others/Headlines";
 
 const ssxRoutes = [
   {
@@ -9,10 +10,10 @@ const ssxRoutes = [
     layout: "/admin",
   },
   {
-    path: "/user",
-    name: "My Wallet",
+    path: "/headlines",
+    name: "Market headlines",
     icon: "nc-icon nc-circle-09",
-    component: Dashboard,
+    component: HeadlinePage,
     layout: "/admin",
   },
   {
